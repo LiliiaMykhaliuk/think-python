@@ -41,7 +41,7 @@ def random_birthdays(students = 23):
     """Generates random birthdays"""
 
     start_date = datetime.date(2000, 1, 1)
-    end_date = datetime.date(2000, 7, 1)
+    end_date = datetime.date(2000, 12, 1)
 
 
     time_between_dates = end_date - start_date
@@ -56,7 +56,7 @@ def random_birthdays(students = 23):
     return birthdays
 
 def test_prob(times):
-    """THe function count chances of having same birthday among 23 people"""  
+    """THe function count chances of having same birthday among 23 people"""
 
     # Counter of people with same birthdays
     count_probability = 0
@@ -75,8 +75,8 @@ def test_prob(times):
             count_probability += 1
 
     # Return amount of same birthdays
-    return count_probability
+    return (count_probability * 100 ) / times
 
-TIMES = 500
-MATCHES = test_prob(TIMES)
-print(f"In {TIMES} simulation of 23 random birthdays, mathes were found {MATCHES} times ")
+TIMES = 1000
+REAL_PROBABILITY = test_prob(TIMES)
+print(f"In {TIMES} simulation of 23 random birthdays, the real percent of found matches was {REAL_PROBABILITY} %")
