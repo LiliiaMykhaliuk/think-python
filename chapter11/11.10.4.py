@@ -18,7 +18,7 @@ def has_duplicates(list_in):
     for i in list_in:
         if i in list_dict:
             return True
-        list_dict.setdefault(i, "")
+        list_dict[i] = 1
     return False
 
 # False
