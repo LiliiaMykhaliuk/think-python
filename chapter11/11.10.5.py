@@ -9,6 +9,23 @@ Exercises of the book "Think python"
 # Write a program that reads a wordlist and finds all the rotate pairs. Solution:
 # http://thinkpython2.com/code/rotate_pairs.py.
 
+def rotate_word(word, number):
+    """Rotates word by using Ceasar cypher"""
+
+        # Create rotate word
+    new_word = ""
+    for letter in word:
+        new_number = ord(letter) + number
+
+        # Incase of zigzag
+        if new_number > 122:
+            new_number = 96 + (new_number - 122)
+        if new_number < 97:
+            new_number = 123 + number
+
+        new_word += chr(new_number)
+    return new_word
+
 def rotate_pairs(word_list, number):
     """Function rotates word by using Caesar cypher"""
     word_dict = {}
@@ -21,19 +38,9 @@ def rotate_pairs(word_list, number):
     for word1 in word_dict:
 
         # Create rotate word
-        new_word = ""
-        for letter in word1:
-            new_number = ord(letter) + number
+        new_word = rotate_word(word1, number)
 
-            # Incase of zigzag
-            if new_number > 122:
-                new_number = 96 + (new_number - 122)
-            if new_number < 97:
-                new_number = 123 + number
-
-            new_word += chr(new_number)
-
-        # Check if there is rotate pair     
+        # Check if there is rotate pair 
         rotated_word = word_dict.get(new_word)
         if rotated_word is not None:
             pairs[word1] = new_word
