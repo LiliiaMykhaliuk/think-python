@@ -20,8 +20,9 @@ import string
 import bisect
 import random
 
+
 def process_book(PATH):
-    """"Processes book into word list"""
+    """"Processes book into histogram of words frequency"""
 
     # Get a list of punctuation
     punct = list(string.punctuation)
@@ -55,65 +56,86 @@ def process_book(PATH):
                     all_words[word] = all_words[word] + 1
     return all_words
 
-# Get a path to the file with text
-PATH = os.path.sep.join(["chapter13", "gunetberg.txt"])
-
-word_frequency = process_book(PATH)
 
 def get_word_list(freq_dict):
     """Creates a list of unique words"""
 
     return sorted(freq_dict, key=freq_dict.get, reverse=False)
 
+
 def get_cumulative_sum(freq_dict):
-    """Creates a list with cumulative summ of frequences of the words"""
+    """Creates a list with cumulative sum of frequencies of the words"""
 
     result = []
-    # Go through sorted by word dictionary
+
+    # Go through dictionary sorted by word
     for i in sorted(freq_dict, key=freq_dict.get, reverse=False):
 
-        # Set first summ
-        if not result:
-            result.append(freq_dict[i])
-            # Save current summ for the next iteration
-            last_sum = freq_dict[i]
-        
-        # Create next cummulative summ
-        current_sum = freq_dict[i] + last_sum
-        # Save current summ for the next iteration
-        last_sum = current_sum
+        # Make cumulative sum
 
-        # Save next cummulative summ
-        result.append(current_sum)
+        if not result:
+            # Set first sum
+            result.append(freq_dict[i])
+            # Save current sum for the next iteration
+            last_sum = freq_dict[i]
+        else:
+            # Create next cumulative sum
+            current_sum = freq_dict[i] + last_sum
+            # Save current sum for the next iteration
+            last_sum = current_sum
+
+            # Save current cumulative sum into list
+            result.append(current_sum)
+
     return result
 
-def in_bisect_cheat(given_list, number):
+
+def bisect_search(given_list, number):
     """Finds index in a list using bisection search.
     Precondition: the words in the list are sorted
-    given_list: list of cumulative cums
+    given_list: list of cumulative sum
     word: int
     """
+
     i = bisect.bisect_left(given_list, number)
     if i == len(given_list):
         return False
 
     return i
 
-# Create list of unique words
+
+def get_random_word(sum_list, word_list):
+    """Chooses random word from the list of unique words
+
+    sum_list: list of cumulative sum of frequencies
+    word_list: List of unique words in the book
+    """
+
+
+    # Choose random number
+    random_number = random.randrange(0, sum_list[-1])
+
+    # Get the index of the random number in cumulative sum list of frequencies
+    index = bisect_search(cumulative_sum, random_number)
+
+    # Get the random word
+    random_word = word_list[index]
+    
+    return random_word
+
+
+# Get a path to the file with text
+PATH = os.path.sep.join(["chapter13", "gunetberg.txt"])
+
+# Process book into histogram of word frequency
+word_frequency = process_book(PATH)
+
+# Get list of unique words from histogram
 unique_words = get_word_list(word_frequency)
 
-# Create list of cumulative sum
-cummulative_sum = get_cumulative_sum(word_frequency)
-
-# Choose random number
-random_number = random.randrange(0, cummulative_sum[-1])
-
-# Get the index of the word in cumulative sum
-word_index = in_bisect_cheat(cummulative_sum, random_number)
-
-# In case random choice will choose the last word
-if word_index > len(unique_words) - 1:
-    word_index -= 1
+# Create list of cumulative sum of frequencies from histogram
+cumulative_sum = get_cumulative_sum(word_frequency)
 
 # Get the random word
-print(unique_words[word_index])
+result = get_random_word(cumulative_sum, unique_words)
+print(result)

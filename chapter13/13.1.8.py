@@ -36,112 +36,145 @@ import string
 import os
 import random
 
-def process_book_markov_analysis(PATH):
-    """"Processes book by performing Markov analysis"""
+def process_line(text):
+    """Deletes punctuation. Lower case of words. Split text into list"""
 
     # Get a list of punctuation
     punct = list(string.punctuation)
 
-    # Create a dict for translation with punctuation in UNIcode
+    # Create a dict with punctuation in UNIcode
     replace_dict = {}
     for c in punct:
         replace_dict.setdefault(ord(c), "")
 
-    # Delete punctuation. Lower case. Split words into list
-    markov_analisys = {}
+    # Delete punctuation, whitespaces. Lower case.
+    new_text = text.translate(replace_dict).strip().lower()
+    # Split words into list
+    processed_text = new_text.split()
+
+    return processed_text
+
+
+def get_all_words_in_book(PATH):
+    """"Processes book and makes list of all words from the book"""
+
+    words_in_book = []
 
     with open(PATH, 'r') as f:
 
-        # Skipping header
+        # Skip header
         for line in f:
             if line[:3] == "***":
                 break
         f.readline()
 
-        # Left words from the previous line (to make analisys continue where it's ended)
-        left_words = []
-
-        # Go through all words
+        # Go through the book line by line
         for line in f:
-            # Delete punctuation. Lower case. Split words into list
-            line = line.translate(replace_dict).strip().lower()
-            words = line.split()
 
             # Skip empty lines
-            if not words:
+            if not line:
                 continue
 
-            # Process last 3 words from the previous line
-            if left_words:
-                words = left_words + words
+            # Delete punctuation, whitespaces, make case of words lower, split line into list of words
+            words = process_line(line)
 
-            # Perform Merkov analysis
-            for i, word in enumerate(words):
+            # Make list of words from the book
+            words_in_book.extend(words)
 
-                # Process last 3 words the next line for keeping book together
-                if i < len(words) - 3:
-
-                    # Get sufix and prefix
-                    prefix = " ".join([word, words[i + 1]])
-                    sufix = words[i + 2]
-
-                    # Add prefix and sufix to the list
-                    if markov_analisys.get(prefix) is not None:
-                        if sufix not in markov_analisys[prefix]:
-                            markov_analisys[prefix].append(sufix)
-                    else:
-                        markov_analisys[prefix] = [sufix]
-                else:
-                    left_words = words[-3:]
-                    break
-    return markov_analisys
+    return words_in_book
 
 
-def generate_random_text(markov_dict, lenght):
+def perform_markov_analysis(words_list):
+    """Performs Markov analysis with given words"""
+
+    markov_dict = {}
+
+    # Perform Markov analysis
+    for i, word in enumerate(words_list):
+
+        # Last 2 words can't be a prefix
+        if i > len(words_list) - 3:
+            break
+
+        # Get prefix (2 words)
+        prefix = " ".join([word, words_list[i + 1]])
+
+        # Get suffix (next word after prefix)
+        suffix = words_list[i + 2]
+
+        # Add prefix and suffix to the list
+        if markov_dict.get(prefix) is not None:
+            # Prefix already exists
+            if suffix not in markov_dict[prefix]:
+                markov_dict[prefix].append(suffix)
+        else:
+            # Prefix doesn't exist
+            markov_dict[prefix] = [suffix]
+   
+    return markov_dict
+
+
+def generate_random_text(markov_dict, length):
     """Generates random text from the dict created by Markov analysis
 
-    marcov_dict: dictionary with (prefix : list of possible sufixes ) pairs
-    lenght: the lenght of the generated text
+    markov_dict: dictionary with [prefix : list of possible suffixes] pairs
+    length: the length of the generated text
     """
 
-    text = []
+    generated_text = []
 
-    for i in range(lenght):
+    # Generate words for the text
+    for i in range(length):
 
         # Create empty list of words for the next choice
-        generetad_words = []
+        generated_words = []
 
-        # Get the prefix
+        # Get prefix
         if i == 0:
+            # Get random prefix as a first prefix
             chosen_prefix = random.choice(list(markov_dict.keys()))
         else:
+            # Get prefix created on the last iteration
             chosen_prefix = next_prefix
 
-        # Split the prefix into words
-        generetad_words = chosen_prefix.split()
+        # Choose random suffix from all possible suffixes for current prefix
+        chosen_suffix = random.choice(markov_dict[chosen_prefix])
 
-        # Choose random sufix from possible sufixes for current prefix
-        chosen_sufix = random.choice(markov_dict[chosen_prefix])
+        # Make a list of generated words in current iteration
+        generated_words = chosen_prefix.split()
+        generated_words.append(chosen_suffix)
 
-        generetad_words.append(chosen_sufix)
+        # Make a prefix for the next iteration
+        next_prefix = " ".join(generated_words[1:])
 
-        # Give prefix for the next iteration (second word from the current prefix + sufix)
-        next_prefix =" ".join(generetad_words[1:])
+        # Append word to the generated text
+        generated_text.append(generated_words[0])
 
-        # Append first word of the prefix to the list
-        # Prevent duplicates. Append word only if it's not needed anymore for the next sufix
-        next_word = generetad_words[0]
-        text.append(next_word)
+    #Get the text
+    result = " ".join(generated_text)
 
-        #Get the text
-        get_result = " ".join(text)
+    return result
 
-    return get_result
 
+def process_book(PATH):
+    """Processes book by performing Markov analysis"""
+
+    # Make words list from the book
+    all_words = get_all_words_in_book(PATH)
+
+    # Do Markov analysis
+    markov_analysis_result = perform_markov_analysis(all_words)
+
+    return markov_analysis_result
 
 
 # Get a path to the file with text
 PATH = os.path.sep.join(["chapter13", "gunetberg.txt"])
 
-result = process_book_markov_analysis(PATH)
-print(generate_random_text(result, 50))
+# Process book with Markov analysis
+ANALYSIS_RESULT = process_book(PATH)
+
+# Generate text with certain length from analysis result
+TEXT = generate_random_text(ANALYSIS_RESULT, 30)
+
+print(TEXT)
