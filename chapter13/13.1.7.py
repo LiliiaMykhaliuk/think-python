@@ -51,9 +51,8 @@ def process_book(PATH):
 
             # Add unique words to the dict and count their frequency
             for word in words:
-                all_words.setdefault(word, 0)
-                if all_words.get(word) is not None:
-                    all_words[word] = all_words[word] + 1
+                all_words[word] = all_words.get(word, 0) + 1
+
     return all_words
 
 
@@ -63,29 +62,26 @@ def get_word_list(freq_dict):
     return sorted(freq_dict, key=freq_dict.get, reverse=False)
 
 
-def get_cumulative_sum(freq_dict):
+def get_cumulative_sum(freq_dict, sorted_words):
     """Creates a list with cumulative sum of frequencies of the words"""
 
     result = []
 
+    # Set first sum
+    result.append(freq_dict[sorted_words[0]])
+    last_sum = freq_dict[sorted_words[0]]
+
     # Go through dictionary sorted by word
-    for i in sorted(freq_dict, key=freq_dict.get, reverse=False):
+    for i in sorted_words[1:]:
 
         # Make cumulative sum
+        # Create next cumulative sum
+        current_sum = freq_dict[i] + last_sum
+        # Save current sum for the next iteration
+        last_sum = current_sum
 
-        if not result:
-            # Set first sum
-            result.append(freq_dict[i])
-            # Save current sum for the next iteration
-            last_sum = freq_dict[i]
-        else:
-            # Create next cumulative sum
-            current_sum = freq_dict[i] + last_sum
-            # Save current sum for the next iteration
-            last_sum = current_sum
-
-            # Save current cumulative sum into list
-            result.append(current_sum)
+        # Save current cumulative sum into list
+        result.append(current_sum)
 
     return result
 
@@ -134,8 +130,8 @@ word_frequency = process_book(PATH)
 unique_words = get_word_list(word_frequency)
 
 # Create list of cumulative sum of frequencies from histogram
-cumulative_sum = get_cumulative_sum(word_frequency)
+cumulative_sum = get_cumulative_sum(word_frequency, unique_words)
 
 # Get the random word
-result = get_random_word(cumulative_sum, unique_words)
-print(result)
+result_word = get_random_word(cumulative_sum, unique_words)
+print(result_word)

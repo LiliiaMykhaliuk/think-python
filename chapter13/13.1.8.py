@@ -35,6 +35,7 @@ Exercises of the book "Think python"
 import string
 import os
 import random
+import time
 
 def process_line(text):
     """Deletes punctuation. Lower case of words. Split text into list"""
@@ -102,15 +103,12 @@ def perform_markov_analysis(words_list):
         # Get suffix (next word after prefix)
         suffix = words_list[i + 2]
 
-        # Add prefix and suffix to the list
-        if markov_dict.get(prefix) is not None:
-            # Prefix already exists
-            if suffix not in markov_dict[prefix]:
-                markov_dict[prefix].append(suffix)
-        else:
-            # Prefix doesn't exist
-            markov_dict[prefix] = [suffix]
-   
+        # Add prefix and suffix to the dict
+        markov_dict.setdefault(prefix, [suffix])
+
+        if suffix not in markov_dict[prefix]:
+            markov_dict[prefix].append(suffix)
+
     return markov_dict
 
 
