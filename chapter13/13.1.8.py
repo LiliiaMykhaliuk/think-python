@@ -32,24 +32,14 @@ Exercises of the book "Think python"
 # download my solution from http://thinkpython2.com/code/markov.py. 
 # You will also need http://thinkpython2.com/code/emma.txt.
 
-import string
 import os
 import random
-import time
 
 def process_line(text):
-    """Deletes punctuation. Lower case of words. Split text into list"""
+    """Deletes whitespaces. Lower case of words. Split text into list"""
 
-    # Get a list of punctuation
-    punct = list(string.punctuation)
-
-    # Create a dict with punctuation in UNIcode
-    replace_dict = {}
-    for c in punct:
-        replace_dict.setdefault(ord(c), "")
-
-    # Delete punctuation, whitespaces. Lower case.
-    new_text = text.translate(replace_dict).strip().lower()
+    # Delete whitespaces. Lower case.
+    new_text = text.strip().lower()
     # Split words into list
     processed_text = new_text.split()
 
@@ -173,6 +163,6 @@ PATH = os.path.sep.join(["chapter13", "gunetberg.txt"])
 ANALYSIS_RESULT = process_book(PATH)
 
 # Generate text with certain length from analysis result
-TEXT = generate_random_text(ANALYSIS_RESULT, 30)
+TEXT = generate_random_text(ANALYSIS_RESULT, 50)
 
 print(TEXT)
