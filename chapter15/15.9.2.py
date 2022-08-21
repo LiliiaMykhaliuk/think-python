@@ -12,7 +12,6 @@ Exercises of the book "Think python"
 # 
 # Solution: http://thinkpython2.com/code/draw.py.
 
-import math
 import turtle
 
 class Point:
@@ -23,67 +22,55 @@ class Point:
         self.x = x
         self.y = y
 
-    def get_distance_between_points(self, pointA, pointB):
-        """Calculate distance to another point"""
-
-        distance = math.sqrt((pointA.x - pointB.x)**2 + (pointA.y - pointB.x)**2)
-        return distance
-
 
 
 class Circle:
     """Represents circle on the coordinate grid"""
 
 
-    def __init__(self, center, radius):
-        self.center = center
+    def __init__(self, center_point_x, center_point_y, radius):
+        self.center = Point(center_point_x, center_point_y)
         self.radius = radius
 
 
+    def draw_circle(self):
+        """Draws circle with Turtle library"""
 
-class Rectangle(Point):
+        # Create initial point
+        circle_turtle = turtle.Turtle()
+
+        # Put turtle's center into the given point
+        circle_turtle.hideturtle()
+        circle_turtle.penup()
+        circle_turtle.goto(self.center.x, self.center.y)
+        circle_turtle.showturtle()
+        circle_turtle.pendown()
+
+        # Draw a circle with given radius
+        circle_turtle.circle(self.radius)
+
+        # Clear everything and hide the turtle
+        circle_turtle.clear()
+        circle_turtle.hideturtle()
+
+
+
+
+class Rectangle():
     """Represents rectangle on the coordinate grid"""
 
 
-    def __init__(self, cornerA, cornerB, cornerC, cornerD):
-        self.cornerA = cornerA
-        self.cornerB = cornerB
-        self.cornerC = cornerC
-        self.cornerD = cornerD
+    def __init__(self, Ax, Ay, height, width):
 
-        self.height = self.get_height()
-        self.width = self.get_width()
+        self.left_down_corner = Point(Ax, Ay)
+        self.height = height
+        self.width = width
 
-    def get_height(self):
-        """Calculate height of the rectangle"""
+        # Set other corners
+        self.right_down_corner = Point(Ax + height, Ay)
+        self.left_up_corner = Point(Ax, Ay + width)
+        self.right_up_corner = Point(Ax + height, Ay + width)
 
-        # Calculate two possible heights 
-        distance_A_B = super().get_distance_between_points(self.cornerA, self.cornerB)
-        distance_A_C = super().get_distance_between_points(self.cornerA, self.cornerC)
-
-        # Choose height
-        if distance_A_B > distance_A_C:
-            height = distance_A_B
-        else:
-            height = distance_A_C
-        
-        return height
-
-
-    def get_width(self):
-        """Calculate width of the rectangle"""
-
-        # Calculate two possible widths 
-        distance_A_B = super().get_distance_between_points(self.cornerA, self.cornerB)
-        distance_A_C = super().get_distance_between_points(self.cornerA, self.cornerC)
-
-        # Choose width
-        if distance_A_B < distance_A_C:
-            width = distance_A_B
-        else:
-            width = distance_A_C
-        
-        return width
 
 
     def draw_rectangle(self):
@@ -100,9 +87,16 @@ class Rectangle(Point):
         rectangle.fd(self.height)
         rectangle.lt(90)
         rectangle.fd(self.width)
-        turtle.mainloop()
+
+        # Clear everything and hide the turtle
+        rectangle.clear()
+        rectangle.hideturtle()
 
 
+# Draw rectangle
+rectangle_1 = Rectangle(10, 10, 50, 30)
+rectangle_1.draw_rectangle()
 
-rectangle = Rectangle(Point(10, 10), Point(130, 100), Point(130, 130), Point(100, 130))
-rectangle.draw_rectangle()
+# Draw circle
+circle_1 = Circle(30, 30, 49)
+circle_1.draw_circle()
