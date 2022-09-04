@@ -130,6 +130,8 @@ class PokerHand(Hand):
         """Returns True if the hand has a full_house, False otherwise.
            (full_house is 3 cards with one rank, 2 cards with another)
         """
+        # Make a histogram for ranks in cards
+        self.rank_hist()
 
         found_3 = 0
         found_2 = 0
@@ -217,7 +219,7 @@ def has_5_ranks_in_row(rank_list):
     for index, rank in enumerate(rank_list):
 
         # [10-Jack-Queen-King-Ace] case
-        if amount_in_sequence == 4 and rank == 13 and rank_list[0] == 1:
+        if amount_in_sequence == 3 and rank == 13 and rank_list[0] == 1:
             return True
     
         # Break if there are no more items
@@ -225,13 +227,13 @@ def has_5_ranks_in_row(rank_list):
             break
 
         # Check if current rank is less than next one
-        if rank < rank_list[index + 1]:
+        if rank_list[index + 1] - rank == 1:
             amount_in_sequence += 1
         else:
             amount_in_sequence = 0
 
         # In case we have straight (5 ranks in a row)
-        if amount_in_sequence == 5:
+        if amount_in_sequence == 4:
             return True
     return False
 
@@ -256,27 +258,41 @@ def deal_hands(deck_cards, amount_of_hands, amount_of_cards_per_hand):
     return poker_hands_list
 
 
-def classifications_probabilities(poker_hands):
+def count_classifications(poker_hands):
     """Classifies the hands, and counts the number of times various classifications appear"""
 
-    probabilities = {}
+    count_classification = {}
 
     # Go through PokerHands
     for poker_hand in poker_hands:
-        print("PLAYER: \n", poker_hand)
         # Classify PokerHand
         classification = poker_hand.classify()
         # Count amount of classification
         if classification:
-            probabilities[classification] = probabilities.get(classification, 0) + 1
+            count_classification[classification] = count_classification.get(classification, 0) + 1
+    return count_classification
+
+
+def run_cases(n):
+    """Create the deck. Shuffles it. Deals PokerHands. Counts probability of classifications"""
+
+    probabilities = {}
+
+    # Deal hands n times
+    for i in range(n):
+        deck = Deck()
+        hands = deal_hands(deck, 10, 5)
+        classified_hands = count_classifications(hands)
+
+        # Save classifications of hands in this case
+        for label, counter in classified_hands.items():
+            probabilities[label] = probabilities.get(label, 0) + counter
+
+    # Count probability of each classification
+    for classification, amount in probabilities.items():
+        probabilities[classification] = (amount * 100) / (n * 10)
     return probabilities
 
-
-def run_the_case():
-    """Create the deck. Shuffles it. Deals PokerHands. Counts probability of classification"""
-    deck = Deck()
-    hands = deal_hands(deck, 10, 5)
-    return classifications_probabilities(hands)
-
 if __name__ == '__main__':
-    print(run_the_case())
+
+    print(run_cases(100))
