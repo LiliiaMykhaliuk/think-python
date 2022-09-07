@@ -139,18 +139,18 @@ class PokerHand(Hand):
         for rank_cards in self.ranks.values():
 
             # Found 3 cards with same rank
-            if rank_cards >= 3:
+            if rank_cards >= 3 and found_3 == 0:
                 found_3 = 1
                 continue
 
             # Found 2 cards with same rank
-            if rank_cards >= 2:
+            if rank_cards >= 2 and found_2 == 0:
                 found_2 = 1
                 continue
 
-            # If we got full house
-            if found_2 == 1 and found_3 == 1:
-                return True
+        # If we got full house
+        if found_2 == 1 and found_3 == 1:
+            return True
         return False
 
 
@@ -201,7 +201,6 @@ class PokerHand(Hand):
             if labels_functions[label_class]:
                 label = labels_priority[label_class]
                 break
-
         return label
 
 
@@ -295,4 +294,6 @@ def run_cases(n):
 
 if __name__ == '__main__':
 
-    print(run_cases(100))
+    result = run_cases(10000)
+    for label in sorted(result, key=result.get, reverse=True):
+        print(f"{result[label]} % | {label}")

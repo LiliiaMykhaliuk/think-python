@@ -188,14 +188,14 @@ class Test_Poker_Get_highest_label(unittest.TestCase):
         self.assertEqual(poker_hand.classify(), 'straight flush')
 
         # four of a kind > pair
-        set_2 = [Card(1, 11), Card(1, 10), Card(1, 12), Card(1, 1), Card(3, 11), Card(2, 11)]
+        set_2 = [Card(1, 11), Card(0, 11), Card(1, 12), Card(1, 1), Card(3, 11), Card(2, 11)]
         poker_hand.cards = set_2
-        self.assertTrue(poker_hand.classify(), 'four of a kind')
+        self.assertEqual(poker_hand.classify(), 'four of a kind')
 
         # classification not found
         set_3 = [Card(2, 3), Card(3, 1), Card(2, 12), Card(2, 5), Card(3, 10), Card(1, 6)]
         poker_hand.cards = set_3
-        self.assertFalse(poker_hand.classify(), '')
+        self.assertEqual(poker_hand.classify(), '')
 
 
 if __name__ == '__main__':
