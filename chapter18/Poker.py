@@ -294,6 +294,6 @@ def run_cases(n):
 
 if __name__ == '__main__':
 
-    result = run_cases(10000)
+    result = run_cases(100000)
     for label in sorted(result, key=result.get, reverse=True):
         print(f"{result[label]} % | {label}")
